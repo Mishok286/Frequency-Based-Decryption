@@ -1,0 +1,75 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+#define ALPHABET_SIZE 26
+
+// Функція для отримання індексу символу в алфавіті (A=0, B=1, ..., Z=25)
+int char_index(char c) {
+    if (isupper(c))
+        return c - 'A';
+    else
+        return c - 'a';
+}
+
+// Функція для обчислення частоти букв
+void calculate_frequencies(char *message, int *frequencies) {
+    for (int i = 0; message[i] != '\0'; i++) {
+        char c = message[i];
+        if (isalpha(c)) {
+            int index = char_index(c);
+            frequencies[index]++;
+        }
+    }
+}
+
+// Функція для визначення найбільш частого символу
+int find_most_frequent_letter(int *frequencies) {
+    int max_frequency = 0;
+    int most_frequent_index = 0;
+    for (int i = 0; i < ALPHABET_SIZE; i++) {
+        if (frequencies[i] > max_frequency) {
+            max_frequency = frequencies[i];
+            most_frequent_index = i;
+        }
+    }
+    return most_frequent_index;
+}
+
+// Функція для розшифровки повідомлення
+void decrypt_message(char *message, int shift) {
+    for (int i = 0; message[i] != '\0'; i++) {
+        char c = message[i];
+        if (isalpha(c)) {
+            int base = isupper(c) ? 'A' : 'a';
+            message[i] = (c - base - shift + ALPHABET_SIZE) % ALPHABET_SIZE + base;
+        }
+    }
+}
+
+int main() {
+    char message[1001];
+    scanf("%[^\n]", message);
+
+    int frequencies[ALPHABET_SIZE] = {0};
+
+    calculate_frequencies(message, frequencies);
+
+    // Визначаємо найбільш часту літеру в зашифрованому тексті
+    int most_frequent_index = find_most_frequent_letter(frequencies);
+
+    // Літера 'E' найбільш часта, її індекс - 4
+    int expected_most_frequent_index = char_index('E');
+
+    // Обчислюємо зсув
+    int shift = (most_frequent_index - expected_most_frequent_index + ALPHABET_SIZE) % ALPHABET_SIZE;
+
+    // Розшифровуємо повідомлення
+    decrypt_message(message, shift);
+
+    // Виводимо результат
+    printf("%s\n", message);
+
+    return 0;
+}
